@@ -16,14 +16,20 @@ import ClientLayout from "../layout/ClientLayout";
 import StaffLogin from "../pages/Auth/StaffLogin";
 import Unauthorized from "../errors/Unauthorized";
 import App from "../website/App";
+import ErrorComponent from "../errors/ErrorComponent";
 
 const OpenRoutes: RouteObject = {
   path: "/",
   element: <Outlet />,
+  errorElement: <ErrorComponent />,
   children: [
     {
       path: "/login",
       element: <Login />,
+    },
+    {
+      path: "/staff-login",
+      element: <StaffLogin />,
     },
     {
       path: "/unauthorized",
