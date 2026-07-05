@@ -8,6 +8,27 @@ html {
 body {
   scroll-behavior: smooth;
 }
+
+/* Navbar link hover underline effect */
+nav a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #EC5B00;
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+
+nav a:hover {
+  color: #EC5B00 !important;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
 /* Container for the how it works section */
 .how-it-works-container {
   position: relative;

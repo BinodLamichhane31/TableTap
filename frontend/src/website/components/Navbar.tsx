@@ -5,13 +5,12 @@ import {
   Image,
   Input,
   Modal,
-  Paper,
   Select,
   Stack,
   Text,
   Burger,
 } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery, useWindowScroll } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa6";
 import { useState } from "react";
@@ -35,6 +34,9 @@ const Navbar = () => {
   const [businessType, setBusinessType] = useState("");
   const [businessName, setBusinessName] = useState("");
   const queryClient = useQueryClient();
+  const [scroll] = useWindowScroll();
+
+  const isScrolled = scroll.y > 20;
 
   const handleSubmit = async () => {
     const body = {
@@ -71,10 +73,11 @@ const Navbar = () => {
   const scrollToSection = (id) => {
     gsap.to(window, {
       duration: 1.5,
-      scrollTo: { y: `#${id}`, offsetY: 50 },
+      scrollTo: { y: `#${id}`, offsetY: 70 },
       ease: "power2.out",
     });
   };
+
   const navItems = (
     <>
       <a style={linkStyle} onClick={() => scrollToSection("features")}>
@@ -93,11 +96,13 @@ const Navbar = () => {
     <>
       <Button
         c="#EC5B00"
-        variant="transparent"
+        variant="subtle"
+        radius="xl"
         onClick={() => {
           navigate("/login");
           closeDrawer();
         }}
+        style={{ fontWeight: 500, letterSpacing: "0.3px" }}
       >
         Login
       </Button>
@@ -106,11 +111,28 @@ const Navbar = () => {
           openModal();
           closeDrawer();
         }}
-        radius={15}
-        w={isMobile ? "100%" : 250}
-        h="56px"
+        radius="xl"
+        w={isMobile ? "100%" : "auto"}
+        px={isMobile ? undefined : 24}
+        h={44}
         bg="#EC5B00"
-        rightSection={<FaArrowRight />}
+        rightSection={<FaArrowRight size={14} />}
+        style={{
+          fontWeight: 500,
+          letterSpacing: "0.3px",
+          boxShadow: "0 4px 15px rgba(236, 91, 0, 0.35)",
+          transition: "box-shadow 0.2s ease, transform 0.2s ease",
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+          (e.currentTarget as HTMLButtonElement).style.boxShadow =
+            "0 6px 20px rgba(236, 91, 0, 0.5)";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+          (e.currentTarget as HTMLButtonElement).style.boxShadow =
+            "0 4px 15px rgba(236, 91, 0, 0.35)";
+        }}
       >
         Signup for Free
       </Button>
@@ -143,7 +165,6 @@ const Navbar = () => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter your first name"
             />
-            {/* hello */}
             <Text size="sm" c="#4E4B66">
               Contact
             </Text>
@@ -199,45 +220,90 @@ const Navbar = () => {
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}
-        // title="Menu"
-        padding="md"
+        padding="xl"
         size="80%"
         withCloseButton
       >
-        <Stack gap="lg" align="center">
-          {navItems}
-          {actionButtons}
+        <Stack gap="xl" align="center" mt="md">
+          <Image src="img/scanlogo.png" w={90} mb="sm" />
+          <Stack gap="lg" align="center" w="100%">
+            {navItems}
+          </Stack>
+          <Stack gap="md" w="100%" mt="md">
+            {actionButtons}
+          </Stack>
         </Stack>
       </Drawer>
 
-      {/* Navbar */}
-      <Paper style={{ padding: isMobile ? "20px" : "30px 100px" }}>
-        <Group justify="space-between" align="center">
-          <Image src="img/scanlogo.png" w={100} />
+      {/* Sticky Navbar */}
+      <nav
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          padding: isMobile ? "12px 20px" : "0 60px",
+          height: isMobile ? "auto" : "70px",
+          display: "flex",
+          alignItems: "center",
+          transition: "all 0.3s ease",
+          backgroundColor: isScrolled
+            ? "rgba(255, 255, 255, 0.92)"
+            : "rgba(255, 255, 255, 0.75)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+          boxShadow: isScrolled
+            ? "0 2px 20px rgba(0, 0, 0, 0.09)"
+            : "0 1px 0 rgba(0,0,0,0.06)",
+          borderBottom: isScrolled
+            ? "1px solid rgba(236, 91, 0, 0.1)"
+            : "1px solid rgba(0,0,0,0.04)",
+        }}
+      >
+        <Group justify="space-between" align="center" w="100%">
+          {/* Logo */}
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            <Image src="img/scanlogo.png" w={90} />
+          </div>
 
           {isMobile ? (
-            <Burger opened={drawerOpened} onClick={toggleDrawer} />
+            <Burger
+              opened={drawerOpened}
+              onClick={toggleDrawer}
+              size="sm"
+              color="#EC5B00"
+            />
           ) : (
-            <Group gap={40}>
+            <Group gap={36} align="center">
               {navItems}
-              <Group>{actionButtons}</Group>
+              <Group gap={8}>{actionButtons}</Group>
             </Group>
           )}
         </Group>
-      </Paper>
+      </nav>
+
+      {/* Spacer to prevent content from hiding behind fixed navbar */}
+      <div style={{ height: isMobile ? "64px" : "70px" }} />
     </>
   );
 };
 
-const linkStyle = {
-  fontWeight: "400",
+const linkStyle: React.CSSProperties = {
+  fontWeight: 500,
   lineHeight: "24px",
-  letterSpacing: "0.75px",
-  fontFamily: "Poppins",
-  color: "#4E4B66",
-  fontSize: "20px",
+  letterSpacing: "0.4px",
+  fontFamily: "Poppins, sans-serif",
+  color: "#3D3A50",
+  fontSize: "15px",
   textDecoration: "none",
   cursor: "pointer",
+  position: "relative",
+  padding: "4px 0",
+  transition: "color 0.2s ease",
 };
 
 export default Navbar;
