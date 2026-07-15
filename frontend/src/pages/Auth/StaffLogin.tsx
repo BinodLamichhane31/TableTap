@@ -14,9 +14,16 @@ import { axiosPublicInstance } from "../../api";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { LoginResponse } from "../../model/auth.model";
+import useAuthStore from "../../providers/useAuthStore";
+import useStaffAuthStore from "../../providers/useStaffAuthStore";
 
 export default function StaffLogin() {
   const navigate = useNavigate();
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setIsAuth = useAuthStore((state) => state.setIsAuth);
+  const setStaffRole = useStaffAuthStore((state) => state.setRole);
+  const setPermission = useStaffAuthStore((state) => state.setPermission);
 
   const [loading, setLoading] = useState(false);
   const form = useForm({
@@ -35,25 +42,33 @@ export default function StaffLogin() {
     setLoading(true);
     const { email, password, rememberMe } = values;
     try {
-      const res = await axiosPublicInstance.post(
-        "/auth/staff-signin",
-        { email, password },
-        {
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-      const { refreshToken } = res.data;
-      if (res?.status === 201) {
-        if (rememberMe) {
-          localStorage.setItem("rToken", refreshToken);
-        } else {
-          sessionStorage.setItem("rToken", refreshToken);
-        }
-        toast.success("Login Successful");
-        navigate("/dashboard");
+      const res = await axiosPublicInstance.post<
+        LoginResponse & { permission?: string[] }
+      >("/auth/staff-signin", { email, password }, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      const { refreshToken, accessToken, role, permission } = res.data;
+      if (!refreshToken || !accessToken) {
+        toast.error("Invalid login response");
+        return;
       }
+
+      if (rememberMe) {
+        localStorage.setItem("rToken", refreshToken);
+        sessionStorage.removeItem("rToken");
+      } else {
+        sessionStorage.setItem("rToken", refreshToken);
+        localStorage.removeItem("rToken");
+      }
+
+      setAccessToken(accessToken);
+      setIsAuth(true);
+      if (role) setStaffRole(role);
+      if (permission) setPermission(permission);
+      toast.success("Login Successful");
+      navigate("/dashboard");
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.message || err.message || "An error occurred";
@@ -84,7 +99,7 @@ export default function StaffLogin() {
           <Group justify="space-between" mt="lg">
             <Checkbox
               label="Remember me"
-              {...form.getInputProps("rememberMe")}
+              {...form.getInputProps("rememberMe", { type: "checkbox" })}
             />
             <Anchor component="button" size="sm">
               Forgot password?

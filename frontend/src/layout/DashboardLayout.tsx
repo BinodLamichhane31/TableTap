@@ -68,6 +68,8 @@ export default function DashboardLayout() {
 
       return response.data;
     },
+    enabled: !!token,
+    retry: false,
   });
 
   // Redirect to login on unauthorized error

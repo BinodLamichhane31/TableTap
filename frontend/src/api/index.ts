@@ -1,10 +1,14 @@
 import axios from "axios";
 import useAuthStore from "../providers/useAuthStore";
-const baseURL = "http://10.1.11.100:3030/api/v1";
-export const socketbaseURL = "http://10.1.11.100:3030/orders";
+
+const apiHost =
+  import.meta.env.VITE_API_HOST || "http://localhost:3030";
+const baseURL = `${apiHost}/api/v1`;
+export const socketbaseURL = `${apiHost}/orders`;
 
 export const axiosPrivateInstance = axios.create({
   baseURL,
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -12,6 +16,7 @@ export const axiosPrivateInstance = axios.create({
 
 export const axiosPublicInstance = axios.create({
   baseURL,
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -34,11 +39,14 @@ axiosPrivateInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
       try {
         const refreshToken =
           localStorage.getItem("rToken") || sessionStorage.getItem("rToken");
+        if (!refreshToken) {
+          return Promise.reject(error);
+        }
         const response = await axios.post(
           `${baseURL}/auth/refresh-token`,
           {},
@@ -46,21 +54,22 @@ axiosPrivateInstance.interceptors.response.use(
             headers: {
               Authorization: `Bearer ${refreshToken}`,
             },
+            timeout: 15000,
           }
         );
         const accessToken = response.data;
 
-        const setAcessToken = useAuthStore.getState().setAccessToken;
-        setAcessToken(accessToken);
-        const setIsAuth = useAuthStore.getState().setIsAuth;
-        setIsAuth(true);
+        useAuthStore.getState().setAccessToken(accessToken);
+        useAuthStore.getState().setIsAuth(true);
         axiosPrivateInstance.defaults.headers.common[
           "Authorization"
         ] = `Bearer ${accessToken}`;
         return axiosPrivateInstance(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem("rToken");
-        // window.location.href = "/login";
+        sessionStorage.removeItem("rToken");
+        useAuthStore.getState().clearAccessToken();
+        useAuthStore.getState().setIsAuth(false);
         return Promise.reject(refreshError);
       }
     }

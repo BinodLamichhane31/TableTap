@@ -1,7 +1,7 @@
 export interface LoginResponse {
-  acessToken: string;
+  accessToken: string;
   refreshToken: string;
-  role: "superAdmin";
+  role: string;
 }
 
 export interface OrderInterface {

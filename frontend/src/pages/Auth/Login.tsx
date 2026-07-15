@@ -17,11 +17,14 @@ import { toast } from "react-toastify";
 import { LoginResponse } from "../../model/auth.model";
 import { axiosPublicInstance } from "../../api";
 import { useMediaQuery } from "@mantine/hooks";
+import useAuthStore from "../../providers/useAuthStore";
 
 export default function Login() {
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setIsAuth = useAuthStore((state) => state.setIsAuth);
   const token =
     window.sessionStorage.getItem("rToken") ||
     window.localStorage.getItem("rToken");
@@ -58,16 +61,24 @@ export default function Login() {
           },
         }
       );
-      const { refreshToken } = res.data;
-      if (res?.status === 201) {
-        if (rememberMe) {
-          localStorage.setItem("rToken", refreshToken);
-        } else {
-          sessionStorage.setItem("rToken", refreshToken);
-        }
-        toast.success("Login Successful");
-        navigate("/dashboard");
+      const { refreshToken, accessToken } = res.data;
+      if (!refreshToken || !accessToken) {
+        toast.error("Invalid login response");
+        return;
       }
+
+      if (rememberMe) {
+        localStorage.setItem("rToken", refreshToken);
+        sessionStorage.removeItem("rToken");
+      } else {
+        sessionStorage.setItem("rToken", refreshToken);
+        localStorage.removeItem("rToken");
+      }
+
+      setAccessToken(accessToken);
+      setIsAuth(true);
+      toast.success("Login Successful");
+      navigate("/dashboard");
     } catch (err: any) {
       const errorMessage =
         err.response?.data?.message || err.message || "An error occurred";
@@ -110,7 +121,7 @@ export default function Login() {
                   <Checkbox
                     label="Keep me logged in"
                     size="md"
-                    {...form.getInputProps("rememberMe")}
+                    {...form.getInputProps("rememberMe", { type: "checkbox" })}
                   />
                   <Link
                     to="/forget-password"
