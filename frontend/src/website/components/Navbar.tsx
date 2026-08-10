@@ -239,26 +239,29 @@ const Navbar = () => {
       <nav
         style={{
           position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
+          top: isScrolled ? (isMobile ? 10 : 15) : (isMobile ? 15 : 25),
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: isMobile ? "92%" : "85%",
+          maxWidth: "1200px",
           zIndex: 1000,
-          padding: isMobile ? "12px 20px" : "0 60px",
-          height: isMobile ? "auto" : "70px",
+          padding: isMobile ? "8px 20px" : "0 32px",
+          height: isMobile ? "60px" : "74px",
           display: "flex",
           alignItems: "center",
-          transition: "all 0.3s ease",
+          borderRadius: "100px",
+          transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
           backgroundColor: isScrolled
-            ? "rgba(255, 255, 255, 0.92)"
-            : "rgba(255, 255, 255, 0.75)",
-          backdropFilter: "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
+            ? "rgba(255, 255, 255, 0.85)"
+            : "rgba(255, 255, 255, 0.65)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
           boxShadow: isScrolled
-            ? "0 2px 20px rgba(0, 0, 0, 0.09)"
-            : "0 1px 0 rgba(0,0,0,0.06)",
-          borderBottom: isScrolled
-            ? "1px solid rgba(236, 91, 0, 0.1)"
-            : "1px solid rgba(0,0,0,0.04)",
+            ? "0 12px 40px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255,255,255,0.9)"
+            : "0 8px 32px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255,255,255,0.7)",
+          border: isScrolled 
+            ? "1px solid rgba(255, 255, 255, 0.8)" 
+            : "1px solid rgba(255, 255, 255, 0.5)",
         }}
       >
         <Group justify="space-between" align="center" w="100%">
@@ -287,7 +290,7 @@ const Navbar = () => {
       </nav>
 
       {/* Spacer to prevent content from hiding behind fixed navbar */}
-      <div style={{ height: isMobile ? "64px" : "70px" }} />
+      <div style={{ height: isMobile ? "80px" : "110px" }} />
     </>
   );
 };
