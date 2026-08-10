@@ -80,62 +80,42 @@ const Navbar = () => {
 
   const navItems = (
     <>
-      <a style={linkStyle} onClick={() => scrollToSection("features")}>
+      <a
+        className={linkClassName}
+        onClick={() => scrollToSection("features")}
+      >
         Features
       </a>
-      <a style={linkStyle} href="#contact">
-        Contact Us
-      </a>
-      <a style={linkStyle} onClick={() => scrollToSection("how-it-works")}>
+      <a className={linkClassName} onClick={() => scrollToSection("how-it-works")}>
         How It Works
+      </a>
+      <a className={linkClassName} href="#contact">
+        Contact Us
       </a>
     </>
   );
 
   const actionButtons = (
     <>
-      <Button
-        c="#EC5B00"
-        variant="subtle"
-        radius="xl"
+      <button
         onClick={() => {
           navigate("/login");
           closeDrawer();
         }}
-        style={{ fontWeight: 500, letterSpacing: "0.3px" }}
+        className="px-5 py-2 rounded-full text-sm font-medium text-slate-700 hover:text-[#EC5B00] hover:bg-orange-50/60 transition-all duration-200 cursor-pointer"
       >
         Login
-      </Button>
-      <Button
+      </button>
+      <button
         onClick={() => {
           openModal();
           closeDrawer();
         }}
-        radius="xl"
-        w={isMobile ? "100%" : "auto"}
-        px={isMobile ? undefined : 24}
-        h={44}
-        bg="#EC5B00"
-        rightSection={<FaArrowRight size={14} />}
-        style={{
-          fontWeight: 500,
-          letterSpacing: "0.3px",
-          boxShadow: "0 4px 15px rgba(236, 91, 0, 0.35)",
-          transition: "box-shadow 0.2s ease, transform 0.2s ease",
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-          (e.currentTarget as HTMLButtonElement).style.boxShadow =
-            "0 6px 20px rgba(236, 91, 0, 0.5)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-          (e.currentTarget as HTMLButtonElement).style.boxShadow =
-            "0 4px 15px rgba(236, 91, 0, 0.35)";
-        }}
+        className="bg-gradient-to-r from-[#EC5B00] to-[#FF7A29] text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-[0_4px_18px_rgba(236,91,0,0.35)] hover:shadow-[0_6px_25px_rgba(236,91,0,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
       >
-        Signup for Free
-      </Button>
+        <span>Signup for Free</span>
+        <FaArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-1" />
+      </button>
     </>
   );
 
@@ -235,78 +215,54 @@ const Navbar = () => {
         </Stack>
       </Drawer>
 
-      {/* Sticky Navbar */}
+      {/* Floating Pill Navbar */}
       <nav
-        style={{
-          position: "fixed",
-          top: isScrolled ? (isMobile ? 10 : 15) : (isMobile ? 15 : 25),
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: isMobile ? "92%" : "85%",
-          maxWidth: "1200px",
-          zIndex: 1000,
-          padding: isMobile ? "8px 20px" : "0 32px",
-          height: isMobile ? "60px" : "74px",
-          display: "flex",
-          alignItems: "center",
-          borderRadius: "100px",
-          transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-          backgroundColor: isScrolled
-            ? "rgba(255, 255, 255, 0.85)"
-            : "rgba(255, 255, 255, 0.65)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          boxShadow: isScrolled
-            ? "0 12px 40px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255,255,255,0.9)"
-            : "0 8px 32px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255,255,255,0.7)",
-          border: isScrolled 
-            ? "1px solid rgba(255, 255, 255, 0.8)" 
-            : "1px solid rgba(255, 255, 255, 0.5)",
-        }}
+        className={`fixed left-1/2 -translate-x-1/2 z-[1000] flex items-center justify-between rounded-full transition-all duration-300 backdrop-blur-2xl ring-1 ${
+          isMobile ? "px-5 h-[58px] w-[92%]" : "px-7 h-[64px] w-[88%] max-w-5xl"
+        } ${
+          isScrolled
+            ? "top-3 bg-white/90 shadow-[0_12px_40px_rgba(0,0,0,0.1)] border border-white/80 ring-black/5"
+            : "top-5 md:top-6 bg-white/70 shadow-[0_8px_32px_rgba(0,0,0,0.06)] border border-white/60 ring-black/5"
+        }`}
       >
-        <Group justify="space-between" align="center" w="100%">
-          {/* Logo */}
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          >
-            <Image src="img/scanlogo.png" w={90} />
-          </div>
+        {/* Logo */}
+        <div
+          className="cursor-pointer flex items-center transition-transform hover:scale-105"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          <Image src="img/scanlogo.png" w={86} />
+        </div>
 
-          {isMobile ? (
-            <Burger
-              opened={drawerOpened}
-              onClick={toggleDrawer}
-              size="sm"
-              color="#EC5B00"
-            />
-          ) : (
-            <Group gap={36} align="center">
+        {isMobile ? (
+          <Burger
+            opened={drawerOpened}
+            onClick={toggleDrawer}
+            size="sm"
+            color="#EC5B00"
+          />
+        ) : (
+          <>
+            {/* Center Nav Links */}
+            <div className="flex items-center gap-1 bg-slate-100/50 p-1 rounded-full border border-slate-200/40">
               {navItems}
-              <Group gap={8}>{actionButtons}</Group>
-            </Group>
-          )}
-        </Group>
+            </div>
+
+            {/* Action CTAs */}
+            <div className="flex items-center gap-2">
+              {actionButtons}
+            </div>
+          </>
+        )}
       </nav>
 
-      {/* Spacer to prevent content from hiding behind fixed navbar */}
-      <div style={{ height: isMobile ? "80px" : "110px" }} />
+      {/* Spacer to prevent content overlap */}
+      <div className="h-24 md:h-28" />
     </>
   );
 };
 
-const linkStyle: React.CSSProperties = {
-  fontWeight: 500,
-  lineHeight: "24px",
-  letterSpacing: "0.4px",
-  fontFamily: "Poppins, sans-serif",
-  color: "#3D3A50",
-  fontSize: "15px",
-  textDecoration: "none",
-  cursor: "pointer",
-  position: "relative",
-  padding: "4px 0",
-  transition: "color 0.2s ease",
-};
+const linkClassName =
+  "px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide text-slate-600 hover:text-[#EC5B00] hover:bg-white transition-all duration-200 cursor-pointer select-none shadow-xs hover:shadow-xs";
 
 export default Navbar;
+

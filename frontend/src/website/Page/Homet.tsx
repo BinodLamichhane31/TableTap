@@ -8,20 +8,20 @@ import ManageOrderTab from "./ManageOrderTab";
 
 const Homet = () => {
   return (
-    <div>
+    <div className="min-h-screen bg-slate-50 text-slate-800 selection:bg-[#EC5B00] selection:text-white font-poppins overflow-x-hidden">
       <Navbar />
       <Hero />
-      <div>
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <AdminImage />
       </div>
-      <div id="features">
+      <div id="features" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ManageOrderTab />
       </div>
-      <div id="how-it-works">
+      <div id="how-it-works" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <HowItWorks />
       </div>
       <FAQ />
-      <div id="contact">
+      <div id="contact" className="w-full">
         <BottomBar />
       </div>
     </div>

@@ -163,8 +163,8 @@ export default function DashboardLayout() {
         }}
         padding="md"
       >
-        <AppShell.Header>
-          <Flex align={"center"} h={"100%"} ml={10}>
+        <AppShell.Header className="bg-white border-b border-gray-100 shadow-xs">
+          <Flex align={"center"} h={"100%"} ml={10} className="w-full">
             <Burger
               opened={opened}
               onClick={toggle}
@@ -175,7 +175,7 @@ export default function DashboardLayout() {
           </Flex>
         </AppShell.Header>
 
-        <AppShell.Navbar bg={"#363740"}>
+        <AppShell.Navbar bg={"#363740"} className="shadow-md">
           <DashboardNavbar toggle={toggle} />
         </AppShell.Navbar>
 
@@ -185,6 +185,7 @@ export default function DashboardLayout() {
           pb={{ lg: 30, sm: 15 }}
           pl={{ lg: 280, sm: 280 }}
           bg="#f0f0fa"
+          className="bg-[#f0f0fa] min-h-screen transition-all duration-300"
         >
           <Outlet />
         </AppShell.Main>
